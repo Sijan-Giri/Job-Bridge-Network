@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -105,7 +105,7 @@ body {
       <h1 class="heading">Create an Account</h1>
 
       <form action="insert.php" method="post">
-        <!-- Name Input -->
+        Name Input -->
         <div class="input-group">
           <label for="name" class="label">Name</label>
           <input
