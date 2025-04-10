@@ -158,7 +158,7 @@
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-    <a class="navbar-brand" href="index.html">
+    <a class="navbar-brand" href="index.php">
   <div class="brand-container">
     <span class="brand-text">Job-Seeker</span>
   </div>

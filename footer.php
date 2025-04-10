@@ -69,6 +69,7 @@ body {
 }
 
 .copy p {
+  text-align : center;
   font-size: 14px;
   color: #888;
 }

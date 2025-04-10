@@ -4,114 +4,124 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Categories</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet" />
   <style>
-    /* Global Styles */
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f5f5f5;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f6f8;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
 
-    /* Wrapper for the form and table */
     .container {
       display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start; /* Prevent form from stretching */
       justify-content: space-between;
-      padding: 40px;
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: auto;
       gap: 30px;
     }
 
-    /* Form Container Styles */
     .form-container {
-      width: 45%;
+      margin-top: 80px;
       background: #fff;
-      border-radius: 10px;
-      padding: 40px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      flex: 1 1 45%;
+      min-width: 300px;
+    }
+
+    .table-container {
+      margin-top: 80px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      flex: 1 1 45%;
+      min-width: 300px;
+      max-height: 600px;
+      overflow-y: auto;
+      margin-bottom: 180px;
     }
 
     .form-container h2 {
       text-align: center;
-      margin-bottom: 30px;
       font-size: 26px;
+      margin-bottom: 25px;
       color: #333;
-      font-weight: 600;
     }
 
-    .form-container label {
-      display: block;
+    label {
       font-size: 14px;
       margin-bottom: 8px;
-      color: #333;
+      display: block;
+      color: #444;
     }
 
-    .form-container input {
+    input[type="text"] {
       width: 100%;
-      padding: 14px;
-      margin-bottom: 20px;
+      padding: 14px 16px;
+      font-size: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 16px;
-      color: #333;
+      background-color: #f9f9f9;
+      margin-bottom: 20px;
       outline: none;
-      transition: border-color 0.3s ease;
+      transition: border 0.3s;
     }
 
-    .form-container input:focus {
+    input[type="text"]:focus {
       border-color: #007bff;
-      box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
     }
 
-    .form-container input::placeholder {
-      color: #888;
-    }
-
-    .form-container button {
+    button[type="submit"] {
       width: 100%;
       padding: 14px;
       background-color: #007bff;
-      color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
+      color: white;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s;
     }
 
-    .form-container button:hover {
+    button:hover {
       background-color: #0056b3;
+      transform: scale(1.02);
     }
 
-    /* Table Styling */
-    .table-container {
-      width: 55%;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-family: 'Poppins', sans-serif;
-      background-color: #fff;
-      border-radius: 8px;
+      min-width: 600px;
     }
 
     th, td {
-      padding: 15px;
+      padding: 14px 16px;
       text-align: left;
-      border: 1px solid #ddd;
-      font-size: 16px;
-      color: #555;
+      border-bottom: 1px solid #eaeaea;
+      font-size: 15px;
+      color: #333;
     }
 
     th {
       background-color: #007bff;
       color: white;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
 
     tr:nth-child(even) {
@@ -119,114 +129,102 @@
     }
 
     tr:hover {
-      background-color: #f1f1f1;
+      background-color: #f1f5f9;
     }
 
-    /* Action Button Styles */
     .action-btn {
       padding: 6px 12px;
-      color: white;
-      background-color: #28a745;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
+      font-size: 13px;
+      color: white;
+      margin-right: 6px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      font-size: 14px;
+      transition: 0.3s ease;
     }
 
     .action-btn:hover {
-      background-color: #218838;
+      opacity: 0.9;
+    }
+
+    .action-btn.edit {
+      background-color: #28a745;
     }
 
     .action-btn.delete {
       background-color: #dc3545;
     }
 
-    .action-btn.delete:hover {
-      background-color: #c82333;
-    }
-
-    /* Responsive Styles */
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
         padding: 20px;
       }
 
-      .form-container, .table-container {
-        width: 100%;
-      }
-
       .form-container h2 {
         font-size: 22px;
       }
 
-      .form-container input, .form-container button {
-        font-size: 16px;
+      input, button {
+        font-size: 14px;
         padding: 12px;
       }
 
-      .table th, .table td {
-        padding: 12px;
+      th, td {
         font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <?php include("header.php") ?>
+
+  <?php include("header.php"); ?>
+
   <div class="container">
     <!-- Form Container -->
     <div class="form-container">
       <h2>Categories</h2>
-      <form action="categories.php" method="POST">
-        <div class="form-group">
-          <label for="text">Category</label>
-          <input type="text" id="text" name="Name" placeholder="Enter category name" required />
-        </div>
-        <button type="submit" name="addcat">Submit</button>
+      <form method="POST" action="categories.php">
+        <label for="text">Category</label>
+        <input type="text" id="text" name="Name" placeholder="Enter category name" required />
+        <button type="submit" name="addcat">Add Category</button>
       </form>
     </div>
 
     <!-- Table Container -->
     <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Apple MacBook Pro 17"</td>
-            <td>Silver</td>
-            <td><a class="action-btn">Edit</a> <a class="action-btn delete">Delete</a></td>
-          </tr>
-          <tr>
-            <td>Microsoft Surface Pro</td>
-            <td>White</td>
-            <td><a class="action-btn">Edit</a> <a class="action-btn delete">Delete</a></td>
-          </tr>
-          <tr>
-            <td>Magic Mouse 2</td>
-            <td>Black</td>
-            <td><a class="action-btn">Edit</a> <a class="action-btn delete">Delete</a></td>
-          </tr>
-          
-          
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+                <tr>
+                   <td>1</td>
+                    <td>hello</td>
+                    <td>
+                        <button class='action-btn edit'>Edit</button>
+                        <button class='action-btn delete'>Delete</button>
+                        </td>
+                    </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-  <?php include("footer.php") ?>
+
+  <?php include("footer.php"); ?>
+
+  <?php
+    if (isset($_POST['addcat'])) {
+        $name = $_POST["Name"];
+        echo "<script>alert('Category \"$name\" submitted!');</script>";
+        // Add DB insertion logic here
+    }
+  ?>
 </body>
 </html>
-
-<?php 
-    if(isset($_POST['addcat'])) {
-        $name = $_POST["Name"];
-        print_r($_POST);
-    }
-?>
