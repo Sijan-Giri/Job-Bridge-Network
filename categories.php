@@ -179,6 +179,7 @@
 <body>
 
   <?php include("header.php"); ?>
+  <?php include("database/db_connect.php"); ?>
 
   <div class="container">
     <!-- Form Container -->
@@ -191,7 +192,6 @@
       </form>
     </div>
 
-    <!-- Table Container -->
     <div class="table-container">
       <div class="table-responsive">
         <table>
@@ -216,15 +216,29 @@
       </div>
     </div>
   </div>
-
   <?php include("footer.php"); ?>
 
   <?php
-    if (isset($_POST['addcat'])) {
-        $name = $_POST["Name"];
-        echo "<script>alert('Category \"$name\" submitted!');</script>";
-        // Add DB insertion logic here
-    }
-  ?>
+  if (isset($_POST['addcat'])) {
+
+      $name = mysqli_real_escape_string($conn, $_POST["Name"]);
+
+      if (!empty($name)) {
+          $query = "INSERT INTO categories (name) VALUES ('$name')";
+          $result = mysqli_query($conn, $query);
+
+          if ($result) {
+              echo "<script>alert('Category added successfully'); window.location.href='categories.php';</script>";
+          } else {
+              echo "<script>alert('Failed to add category');</script>";
+          }
+      } else {
+          echo "<script>alert('Category name cannot be empty');</script>";
+      }
+
+      mysqli_close($conn);
+  }
+?>
+
 </body>
 </html>
