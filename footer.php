@@ -102,7 +102,7 @@ body {
     <div class="container">
       <div class="clearfix"></div>
       <div class="copy">
-        <p>Copyright © 2015 Seeking . All Rights Reserved . Design by :- Sijan Giri</p>
+        <p>Copyright © 2025 Seeking . All Rights Reserved . Design by :- Sijan Giri</p>
       </div>
     </div>
   </div>

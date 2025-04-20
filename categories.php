@@ -16,7 +16,7 @@
     .container {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start; /* Prevent form from stretching */
+      align-items: flex-start;
       justify-content: space-between;
       padding: 40px 20px;
       max-width: 1200px;
@@ -32,19 +32,6 @@
       padding: 30px;
       flex: 1 1 45%;
       min-width: 300px;
-    }
-
-    .table-container {
-      margin-top: 80px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-      padding: 30px;
-      flex: 1 1 45%;
-      min-width: 300px;
-      max-height: 600px;
-      overflow-y: auto;
-      margin-bottom: 180px;
     }
 
     .form-container h2 {
@@ -96,54 +83,83 @@
       transform: scale(1.02);
     }
 
-    .table-responsive {
-      width: 100%;
+    .table-container {
+      margin-top: 80px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      flex: 1 1 45%;
+      min-width: 300px;
+      max-height: 600px;
+      overflow-y: auto;
       overflow-x: auto;
+      margin-bottom: 180px;
     }
 
-    table {
+    .styled-table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       min-width: 600px;
-    }
-
-    th, td {
-      padding: 14px 16px;
-      text-align: left;
-      border-bottom: 1px solid #eaeaea;
       font-size: 15px;
-      color: #333;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: white;
     }
 
-    th {
-      background-color: #007bff;
+    .styled-table thead {
+      background: linear-gradient(to right, #007bff, #3399ff);
       color: white;
+      text-transform: uppercase;
+      font-size: 13px;
       font-weight: 600;
+      letter-spacing: 0.04em;
       position: sticky;
       top: 0;
-      z-index: 1;
+      z-index: 10;
     }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+    .styled-table th,
+    .styled-table td {
+      padding: 16px 18px;
+      text-align: left;
     }
 
-    tr:hover {
-      background-color: #f1f5f9;
+    .styled-table tbody tr:nth-child(even) {
+      background-color: #f8fafd;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #eaf2ff;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .styled-table td:first-child,
+    .styled-table th:first-child {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    .styled-table td:last-child,
+    .styled-table th:last-child {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
     }
 
     .action-btn {
-      padding: 6px 12px;
+      padding: 8px 14px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 13px;
       color: white;
       margin-right: 6px;
       cursor: pointer;
-      transition: 0.3s ease;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
     .action-btn:hover {
+      transform: scale(1.05);
       opacity: 0.9;
     }
 
@@ -173,72 +189,175 @@
       th, td {
         font-size: 14px;
       }
+
+      .action-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+
+      .styled-table {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <?php include("header.php"); ?>
-  <?php include("database/db_connect.php"); ?>
+<?php include("header.php"); ?>
+<?php include("database/db_connect.php"); ?>
 
-  <div class="container">
-    <!-- Form Container -->
-    <div class="form-container">
-      <h2>Categories</h2>
-      <form method="POST" action="categories.php">
-        <label for="text">Category</label>
-        <input type="text" id="text" name="Name" placeholder="Enter category name" required />
-        <button type="submit" name="addcat">Add Category</button>
-      </form>
-    </div>
+<?php
+$editMode = false;
+$editCatName = "";
+$editCatId = "";
 
-    <div class="table-container">
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-                <tr>
-                   <td>1</td>
-                    <td>hello</td>
-                    <td>
-                        <button class='action-btn edit'>Edit</button>
-                        <button class='action-btn delete'>Delete</button>
-                        </td>
-                    </tr>
-          </tbody>
-        </table>
-      </div>
+if (isset($_GET['edit'])) {
+    $editCatId = $_GET['edit'];
+    $editMode = true;
+
+    $editQuery = "SELECT * FROM categories WHERE catid = '$editCatId'";
+    $editResult = mysqli_query($conn, $editQuery);
+
+    if ($editResult && mysqli_num_rows($editResult) > 0) {
+        $editData = mysqli_fetch_assoc($editResult);
+        $editCatName = htmlspecialchars($editData['name']);
+    }
+}
+
+if (isset($_GET['delete'])) {
+    $catId = $_GET['delete'];
+    $deleteQuery = "DELETE FROM categories WHERE catid = '$catId'";
+    $deleteResult = mysqli_query($conn, $deleteQuery);
+
+    if ($deleteResult) {
+        echo "<script>alert('Category deleted successfully'); window.location.href='categories.php';</script>";
+    } else {
+        echo "<script>alert('Failed to delete category');</script>";
+    }
+}
+?>
+
+<div class="container">
+  <!-- Form Container -->
+  <div class="form-container">
+    <h2><?php echo $editMode ? 'Edit Category' : 'Categories'; ?></h2>
+    <form method="POST" action="categories.php<?php echo $editMode ? '?edit=' . $editCatId : ''; ?>">
+      <label for="text">Category</label>
+      <input 
+        type="text" 
+        id="text" 
+        name="Name" 
+        placeholder="Enter category name" 
+        value="<?php echo $editMode ? $editCatName : ''; ?>" 
+        required 
+        autofocus
+      />
+      <button type="submit" name="<?php echo $editMode ? 'updatecat' : 'addcat'; ?>">
+        <?php echo $editMode ? 'Update Category' : 'Add Category'; ?>
+      </button>
+    </form>
+    <?php if ($editMode): ?>
+      <p style="text-align:center; margin-top:10px;">
+        <a href="categories.php" style="text-decoration:none; color:#007bff;">Cancel Edit</a>
+      </p>
+    <?php endif; ?>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+            $query = "SELECT * FROM categories ORDER BY catid DESC";
+            $result = mysqli_query($conn, $query);
+
+            if ($result && mysqli_num_rows($result) > 0) {
+              while ($row = mysqli_fetch_assoc($result)) {
+                  $catId = htmlspecialchars($row['catid']);
+                  $catName = htmlspecialchars($row['name']);
+                  echo "<tr>";
+                  echo "<td>$catId</td>";
+                  echo "<td>$catName</td>";
+                  echo "<td>
+                          <a href='categories.php?edit=$catId' class='action-btn edit'>Edit</a>
+                          <a href='categories.php?delete=$catId' class='action-btn delete' onclick='return confirm(\"Are you sure you want to delete this category?\");'>Delete</a>
+                        </td>";
+                  echo "</tr>";
+              }
+            } else {
+                echo "<tr><td colspan='3'>No categories found.</td></tr>";
+            }
+          ?>
+        </tbody>
+      </table>
     </div>
   </div>
-  <?php include("footer.php"); ?>
+</div>
 
-  <?php
-  if (isset($_POST['addcat'])) {
+<?php include("footer.php"); ?>
 
-      $name = mysqli_real_escape_string($conn, $_POST["Name"]);
+<?php
+// Add Category
+if (isset($_POST['addcat'])) {
+  $name = mysqli_real_escape_string($conn, $_POST["Name"]);
 
-      if (!empty($name)) {
-          $query = "INSERT INTO categories (name) VALUES ('$name')";
-          $result = mysqli_query($conn, $query);
+  if (!empty($name)) {
+      $query = "INSERT INTO categories (name) VALUES ('$name')";
+      $result = mysqli_query($conn, $query);
 
-          if ($result) {
-              echo "<script>alert('Category added successfully'); window.location.href='categories.php';</script>";
-          } else {
-              echo "<script>alert('Failed to add category');</script>";
-          }
+      if ($result) {
+          echo "<script>alert('Category added successfully'); window.location.href='categories.php';</script>";
       } else {
-          echo "<script>alert('Category name cannot be empty');</script>";
+          echo "<script>alert('Failed to add category');</script>";
       }
-
-      mysqli_close($conn);
+  } else {
+      echo "<script>alert('Category name cannot be empty');</script>";
   }
+}
+
+// Update Category
+if (isset($_POST['updatecat']) && isset($_GET['edit'])) {
+  $updatedName = mysqli_real_escape_string($conn, $_POST["Name"]);
+  $updateId = $_GET['edit'];
+
+  if (!empty($updatedName)) {
+      $updateQuery = "UPDATE categories SET name = '$updatedName' WHERE catid = '$updateId'";
+      $updateResult = mysqli_query($conn, $updateQuery);
+
+      if ($updateResult) {
+          echo "<script>alert('Category updated successfully'); window.location.href='categories.php';</script>";
+      } else {
+          echo "<script>alert('Failed to update category');</script>";
+      }
+  } else {
+      echo "<script>alert('Category name cannot be empty');</script>";
+  }
+}
+
+mysqli_close($conn);
 ?>
+
+<script>
+  const form = document.querySelector("form");
+  const categoryInput = document.getElementById("text");
+
+  form.addEventListener("submit", function (e) {
+    const categoryValue = categoryInput.value.trim();
+
+    if (categoryValue === "") {
+      e.preventDefault();
+      alert("Category name cannot be empty!");
+    }
+  });
+</script>
 
 </body>
 </html>
