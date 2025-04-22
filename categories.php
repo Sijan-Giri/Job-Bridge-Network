@@ -263,7 +263,6 @@ if (isset($_GET['delete'])) {
     <?php endif; ?>
   </div>
 
-  <!-- Table Container -->
   <div class="table-container">
     <div class="table-responsive">
       <table class="styled-table">
@@ -323,7 +322,7 @@ if (isset($_POST['addcat'])) {
   }
 }
 
-// Update Category
+
 if (isset($_POST['updatecat']) && isset($_GET['edit'])) {
   $updatedName = mysqli_real_escape_string($conn, $_POST["Name"]);
   $updateId = $_GET['edit'];
