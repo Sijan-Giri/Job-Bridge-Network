@@ -25,7 +25,6 @@
     }
 
     .form-container {
-      margin-top: 80px;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
@@ -84,7 +83,6 @@
     }
 
     .table-container {
-      margin-top: 80px;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);

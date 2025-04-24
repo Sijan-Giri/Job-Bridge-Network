@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Management</title>
   <style>
     body {
@@ -11,24 +12,25 @@
       padding: 0;
       min-height: 100vh;
     }
+    /* Adjusting the container to have top and bottom padding */
     .container {
       display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: space-between;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
       padding: 40px 20px;
-      max-width: 1200px;
-      margin: auto;
-      gap: 30px;
+      margin-top: 60px; /* Add margin for space between header and form */
+      margin-bottom: 60px; /* Add margin for space between footer and form */
     }
+
+    /* Form container styling */
     .form-container {
-      margin-top: 80px;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
       padding: 30px;
-      flex: 1 1 45%;
-      min-width: 300px;
+      width: 100%;
+      max-width: 600px;
     }
     .form-container h2 {
       text-align: center;
@@ -69,111 +71,24 @@
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s;
     }
-    button:hover {
+    button[type="submit"]:hover {
       background-color: #0056b3;
       transform: scale(1.02);
     }
-    .table-container {
-      margin-top: 80px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      padding: 0;
-      flex: 1 1 45%;
-      min-width: 300px;
-      max-height: 600px;
-      overflow-y: auto;
-      overflow-x: auto;
-      margin-bottom: 180px;
+    .cancel-link {
+      text-align: center;
+      margin-top: 10px;
     }
-    .styled-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      min-width: 600px;
-      font-size: 15px;
-      border-radius: 12px;
-      overflow: hidden;
-      background-color: white;
-    }
-    .styled-table thead {
-      background: linear-gradient(to right, #007bff, #3399ff);
-      color: white;
-      text-transform: uppercase;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .styled-table th, .styled-table td {
-      padding: 16px 18px;
-      text-align: left;
-    }
-    .styled-table tbody tr:nth-child(even) {
-      background-color: #f8fafd;
-    }
-    .styled-table tbody tr:hover {
-      background-color: #eaf2ff;
-      transition: background-color 0.2s ease-in-out;
-    }
-    .styled-table td:first-child, .styled-table th:first-child {
-      border-top-left-radius: 10px;
-      border-bottom-left-radius: 10px;
-    }
-    .styled-table td:last-child, .styled-table th:last-child {
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-    }
-    .action-btn {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      color: white;
-      margin-right: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .action-btn:hover {
-      transform: scale(1.05);
-      opacity: 0.9;
-    }
-    .action-btn.edit {
-      background-color: #28a745;
-    }
-    .action-btn.delete {
-      background-color: #dc3545;
-    }
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        padding: 20px;
-      }
-      .form-container h2 {
-        font-size: 22px;
-      }
-      input, button {
-        font-size: 14px;
-        padding: 12px;
-      }
-      th, td {
-        font-size: 14px;
-      }
-      .action-btn {
-        font-size: 12px;
-        padding: 6px 10px;
-      }
-      .styled-table {
-        min-width: 100%;
-      }
+    .cancel-link a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-<?php include('header.php') ?>
+<?php include('header.php'); ?>
 <?php include("database/db_connect.php"); ?>
 
 <?php
@@ -208,9 +123,8 @@ if (isset($_POST['addjob'])) {
     '".mysqli_real_escape_string($conn, $_POST['location'])."',
     '".mysqli_real_escape_string($conn, $_POST['catid'])."'
   )";
-
   mysqli_query($conn, $query);
-
+  header("Location: index.php"); // Redirect after successful addition
   exit;
 }
 
@@ -227,21 +141,12 @@ if (isset($_POST['updatejob'])) {
     catid = '".mysqli_real_escape_string($conn, $_POST['catid'])."'
     WHERE jobid = $editJobId";
   mysqli_query($conn, $query);
-  header("Location: jobs.php");
-  exit;
-}
-
-// Handle Delete
-if (isset($_GET['delete'])) {
-  $deleteId = $_GET['delete'];
-  mysqli_query($conn, "DELETE FROM jobs WHERE jobid = $deleteId");
-  header("Location: jobs.php");
+  header("Location: jobs.php"); // Redirect after successful update
   exit;
 }
 ?>
 
 <div class="container">
-  <!-- Form Container -->
   <div class="form-container">
     <h2><?php echo $editMode ? 'Edit Job' : 'Add Job'; ?></h2>
     <form method="POST" action="jobs.php<?php echo $editMode ? '?edit=' . $editJobId : ''; ?>">
@@ -281,56 +186,15 @@ if (isset($_GET['delete'])) {
         <?php echo $editMode ? 'Update Job' : 'Add Job'; ?>
       </button>
     </form>
-    <?php if ($editMode): ?>
-      <p style="text-align:center; margin-top:10px;">
-        <a href="jobs.php" style="text-decoration:none; color:#007bff;">Cancel Edit</a>
-      </p>
-    <?php endif; ?>
-  </div>
 
-  <!-- Table -->
-  <div class="table-container">
-    <table class="styled-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Title</th>
-          <th>Skill</th>
-          <th>Timing</th>
-          <th>Date</th>
-          <th>Salary</th>
-          <th>Location</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-          $jobs = mysqli_query($conn, "SELECT * FROM jobs");
-          if ($jobs && mysqli_num_rows($jobs) > 0) {
-            while ($job = mysqli_fetch_assoc($jobs)) {
-              echo "<tr>";
-              echo "<td>{$job['jobid']}</td>";
-              echo "<td>".htmlspecialchars($job['name'])."</td>";
-              echo "<td>".htmlspecialchars($job['skill'])."</td>";
-              echo "<td>".htmlspecialchars($job['timing'])."</td>";
-              echo "<td>{$job['date']}</td>";
-              echo "<td>".htmlspecialchars($job['salary'])."</td>";
-              echo "<td>".htmlspecialchars($job['location'])."</td>";
-              echo "<td>
-                      <a href='jobs.php?edit={$job['jobid']}' class='action-btn edit'>Edit</a>
-                      <a href='jobs.php?delete={$job['jobid']}' class='action-btn delete' onclick='return confirm(\"Are you sure?\")'>Delete</a>
-                    </td>";
-              echo "</tr>";
-            }
-          } else {
-            echo "<tr><td colspan='8'>No jobs found.</td></tr>";
-          }
-        ?>
-      </tbody>
-    </table>
+    <?php if ($editMode): ?>
+      <div class="cancel-link">
+        <a href="jobs.php" class="cancel-link">Cancel Edit</a>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
 
-<?php include("footer.php") ?>
+<?php include('footer.php') ?>
 </body>
 </html>

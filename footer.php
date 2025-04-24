@@ -3,108 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Footer</title>
+  <title>Job Management</title>
   <style>
     /* Global reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-}
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh; /* Ensures the body takes at least the full height of the screen */
+    }
 
-.container {
-  width: 100%;
-  max-width: 1170px;
-  margin: 0 auto;
-  padding: 0 15px;
-}
+    /* Main content container styling */
+    .container {
+      width: 100%;
+      max-width: 1170px;
+      margin: 0 auto;
+      padding: 20px 15px; /* Padding around the form */
+      flex: 1; /* This allows the content to take up the remaining space */
+    }
 
-.footer_bottom {
-  background-color: #222;
-  color: #fff;
-  padding: 30px 0;
-}
+    /* Form Styling */
+    .form-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 150px; /* Add margin to ensure spacing from footer */
+    }
 
-.f_list2 {
-  list-style-type: none;
-}
+    .form-container h2 {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 25px;
+      color: #333;
+    }
 
-.f_list2 li {
-  margin-bottom: 10px;
-}
+    label {
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: block;
+      color: #444;
+    }
 
-.f_list2 a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-}
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border 0.3s;
+    }
 
-.f_list2 a:hover {
-  text-decoration: underline;
-}
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
 
-.footer_text {
-  margin-top: 20px;
-}
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
 
-.footer_text p {
-  font-size: 14px;
-  line-height: 1.8;
-}
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+      transform: scale(1.02);
+    }
 
-.clearfix::after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    /* Footer Styling */
+    .footer_bottom {
+      background-color: #222;
+      color: #fff;
+      padding: 30px 0;
+      text-align: center;
+    }
 
-.copy {
-  text-align: center;
-  margin-top: 20px;
-}
+    .copy {
+      margin-top: 20px;
+    }
 
-.copy p {
-  text-align : center;
-  font-size: 14px;
-  color: #888;
-}
+    .copy p {
+      font-size: 14px;
+      color: #888;
+    }
 
-.copy a {
-  color: #fff;
-}
+    .copy a {
+      color: #fff;
+    }
 
-.copy a:hover {
-  text-decoration: underline;
-}
+    .copy a:hover {
+      text-decoration: underline;
+    }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .col-sm-2, .col-sm-6 {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .footer_text {
-    margin-top: 10px;
-  }
-}
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .footer_bottom {
+        padding: 20px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+    }
 
   </style>
 </head>
 <body>
   <div class="footer_bottom">
-    <div class="container">
-      <div class="clearfix"></div>
-      <div class="copy">
-        <p>Copyright © 2025 Seeking . All Rights Reserved . Design by :- Sijan Giri</p>
-      </div>
+    <div class="copy">
+      <p>Copyright © 2025 Seeking. All Rights Reserved. Design by: Sijan Giri</p>
     </div>
   </div>
+
 </body>
 </html>

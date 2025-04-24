@@ -69,6 +69,7 @@
     .navbar {
       background-color: #0056b3; /* Job-Bridge blue color */
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 60px;
     }
 
     .navbar-dark .navbar-nav .nav-link {
