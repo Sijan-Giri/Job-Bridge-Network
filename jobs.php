@@ -1,9 +1,13 @@
+<?php
+ob_start(); // Start output buffering
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Management</title>
+  <title>Add Job</title>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -12,18 +16,17 @@
       padding: 0;
       min-height: 100vh;
     }
-    /* Adjusting the container to have top and bottom padding */
+
     .container {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100%;
       padding: 40px 20px;
-      margin-top: 60px; /* Add margin for space between header and form */
-      margin-bottom: 60px; /* Add margin for space between footer and form */
+      margin-top: 60px;
+      margin-bottom: 60px;
     }
 
-    /* Form container styling */
     .form-container {
       background: #fff;
       border-radius: 12px;
@@ -32,19 +35,22 @@
       width: 100%;
       max-width: 600px;
     }
+
     .form-container h2 {
       text-align: center;
       font-size: 26px;
       margin-bottom: 25px;
       color: #333;
     }
+
     label {
       font-size: 14px;
       margin-bottom: 8px;
       display: block;
       color: #444;
     }
-    input[type="text"], input[type="date"], textarea, select {
+
+    input[type="text"], input[type="date"], input[type="number"], textarea, select {
       width: 100%;
       padding: 14px 16px;
       font-size: 15px;
@@ -55,10 +61,12 @@
       outline: none;
       transition: border 0.3s;
     }
-    input[type="text"]:focus, textarea:focus, select:focus {
+
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus, input[type="date"]:focus {
       border-color: #007bff;
       box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
     }
+
     button[type="submit"] {
       width: 100%;
       padding: 14px;
@@ -71,14 +79,17 @@
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s;
     }
+
     button[type="submit"]:hover {
       background-color: #0056b3;
       transform: scale(1.02);
     }
+
     .cancel-link {
       text-align: center;
       margin-top: 10px;
     }
+
     .cancel-link a {
       text-decoration: none;
       color: #007bff;
@@ -100,10 +111,8 @@ $editData = [
   'location' => '', 'catid' => ''
 ];
 
-// Get categories for dropdown
 $categoryList = mysqli_query($conn, "SELECT * FROM categories");
 
-// Edit mode
 if (isset($_GET['edit'])) {
   $editMode = true;
   $editJobId = $_GET['edit'];
@@ -111,7 +120,6 @@ if (isset($_GET['edit'])) {
   $editData = mysqli_fetch_assoc($result);
 }
 
-// Handle Add
 if (isset($_POST['addjob'])) {
   $query = "INSERT INTO jobs (name, description, skill, timing, date, salary, location, catid) VALUES (
     '".mysqli_real_escape_string($conn, $_POST['name'])."',
@@ -124,11 +132,10 @@ if (isset($_POST['addjob'])) {
     '".mysqli_real_escape_string($conn, $_POST['catid'])."'
   )";
   mysqli_query($conn, $query);
-  header("Location: index.php"); // Redirect after successful addition
+  header("Location: jobs.php?success=1");
   exit;
 }
 
-// Handle Update
 if (isset($_POST['updatejob'])) {
   $query = "UPDATE jobs SET 
     name = '".mysqli_real_escape_string($conn, $_POST['name'])."',
@@ -141,7 +148,7 @@ if (isset($_POST['updatejob'])) {
     catid = '".mysqli_real_escape_string($conn, $_POST['catid'])."'
     WHERE jobid = $editJobId";
   mysqli_query($conn, $query);
-  header("Location: jobs.php"); // Redirect after successful update
+  header("Location: jobs.php");
   exit;
 }
 ?>
@@ -166,7 +173,7 @@ if (isset($_POST['updatejob'])) {
       <input type="date" name="date" value="<?php echo $editData['date']; ?>" required>
 
       <label>Salary</label>
-      <input type="text" name="salary" value="<?php echo $editData['salary']; ?>" required>
+      <input type="number" name="salary" value="<?php echo $editData['salary']; ?>" required>
 
       <label>Location</label>
       <input type="text" name="location" value="<?php echo $editData['location']; ?>" required>
@@ -175,6 +182,7 @@ if (isset($_POST['updatejob'])) {
       <select name="catid" required>
         <option value="">Select Category</option>
         <?php
+          mysqli_data_seek($categoryList, 0); // rewind if already used
           while ($cat = mysqli_fetch_assoc($categoryList)) {
             $selected = ($cat['catid'] == $editData['catid']) ? 'selected' : '';
             echo "<option value='{$cat['catid']}' $selected>{$cat['name']}</option>";
@@ -195,6 +203,20 @@ if (isset($_POST['updatejob'])) {
   </div>
 </div>
 
-<?php include('footer.php') ?>
+<?php include('footer.php'); ?>
 </body>
 </html>
+
+<script>
+  // Show alert if job added successfully (using PHP flag)
+  window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("success") === "1") {
+      alert("✅ Job added successfully!");
+    }
+  };
+</script>
+
+<?php
+ob_end_flush(); // Flush output buffer
+?>

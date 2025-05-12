@@ -6,6 +6,6 @@
     <title>Jobs List</title>
 </head>
 <body>
-    
+    <h1>This is viewjobs page. We are working on it.</h1>
 </body>
 </html>
