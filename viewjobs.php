@@ -126,15 +126,21 @@
         </thead>
         <tbody>
           <?php
+            // Connect to the database
             include('database/db_connect.php');
+
+            // Fetch the jobs and their categories
             $query = "SELECT j.*, c.name AS catname FROM jobs j LEFT JOIN categories c ON j.catid = c.catid ORDER BY j.date DESC";
             $result = mysqli_query($conn, $query);
             $count = 1;
+
+            // Check if there are any jobs to display
             if ($result && mysqli_num_rows($result) > 0) {
               while ($row = mysqli_fetch_assoc($result)) {
                 echo "<tr>";
                 echo "<td>" . $count++ . "</td>";
-                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                // Job Title is now a clickable link to the job details page
+                echo "<td><a href='singlejob.php?id=" . $row['jobid'] . "'>" . htmlspecialchars($row['name']) . "</a></td>";
                 echo "<td>" . htmlspecialchars($row['description']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['skill']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['timing']) . "</td>";
@@ -145,6 +151,7 @@
                 echo "</tr>";
               }
             } else {
+              // If no jobs found
               echo "<tr><td colspan='9' style='text-align:center;'>No jobs found.</td></tr>";
             }
           ?>
@@ -174,5 +181,6 @@
       });
     }
   </script>
+
 </body>
 </html>
