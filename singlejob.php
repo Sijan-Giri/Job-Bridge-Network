@@ -1,25 +1,20 @@
 <?php
-// Include the database connection
 include('database/db_connect.php');
 
-// Check if the 'id' parameter is set and is a valid number
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   $jobId = $_GET['id'];
 
-  // Prepare the SQL query to fetch the job details
   $stmt = $conn->prepare("SELECT j.*, c.name AS catname FROM jobs j LEFT JOIN categories c ON j.catid = c.catid WHERE j.jobid = ?");
   $stmt->bind_param("i", $jobId);
   $stmt->execute();
   $result = $stmt->get_result();
 
-  // Check if a job was found
   if ($result && $result->num_rows > 0) {
     $job = $result->fetch_assoc();
   } else {
     $error_message = "Job not found!";
   }
 
-  // Close the statement and connection
   $stmt->close();
 } else {
   $error_message = "Invalid job ID.";
@@ -97,7 +92,6 @@ $conn->close();
       background-color: #1D4ED8;
     }
 
-    /* Card-style product layout */
     .card {
       border-radius: 12px;
       overflow: hidden;
@@ -190,10 +184,8 @@ $conn->close();
       <div class="card-body">
         <h1 class="card-title"><?= htmlspecialchars($job['name']) ?></h1>
 
-        <!-- Description -->
         <p class="description"><?= nl2br(htmlspecialchars($job['description'])) ?></p>
 
-        <!-- Job Details -->
         <div class="job-detail">
           <span class="label">Job Name:</span>
           <div class="value"><?= htmlspecialchars($job['name']) ?></div>
@@ -224,7 +216,6 @@ $conn->close();
           <div class="category-badge"><?= htmlspecialchars($job['catname']) ?></div>
         </div>
 
-        <!-- Apply Button -->
         <button class="apply-button" onclick="window.location.href='apply.php?jobid=<?= $job['jobid'] ?>'">Apply Now</button>
 
         <a href="viewjobs.php" class="back-link">&larr; Back to Job Listings</a>

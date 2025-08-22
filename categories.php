@@ -236,7 +236,6 @@ if (isset($_GET['delete'])) {
 ?>
 
 <div class="container">
-  <!-- Form Container -->
   <div class="form-container">
     <h2><?php echo $editMode ? 'Edit Category' : 'Categories'; ?></h2>
     <form method="POST" action="categories.php<?php echo $editMode ? '?edit=' . $editCatId : ''; ?>">
@@ -302,7 +301,6 @@ if (isset($_GET['delete'])) {
 <?php include("footer.php"); ?>
 
 <?php
-// Add Category
 if (isset($_POST['addcat'])) {
   $name = mysqli_real_escape_string($conn, $_POST["Name"]);
 

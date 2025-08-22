@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Management</title>
   <style>
-    /* Global reset */
     * {
       margin: 0;
       padding: 0;
@@ -17,19 +16,17 @@
       line-height: 1.6;
       display: flex;
       flex-direction: column;
-      min-height: 100vh; /* Ensures the body takes at least the full height of the screen */
+      min-height: 100vh; 
     }
 
-    /* Main content container styling */
     .container {
       width: 100%;
       max-width: 1170px;
       margin: 0 auto;
-      padding: 20px 15px; /* Padding around the form */
-      flex: 1; /* This allows the content to take up the remaining space */
+      padding: 20px 15px;
+      flex: 1;
     }
 
-    /* Form Styling */
     .form-container {
       background: #fff;
       border-radius: 12px;
@@ -37,7 +34,7 @@
       padding: 30px;
       width: 100%;
       max-width: 600px;
-      margin-bottom: 150px; /* Add margin to ensure spacing from footer */
+      margin-bottom: 150px; 
     }
 
     .form-container h2 {
@@ -89,7 +86,6 @@
       transform: scale(1.02);
     }
 
-    /* Footer Styling */
     .footer_bottom {
       background-color: #222;
       color: #fff;
@@ -114,7 +110,6 @@
       text-decoration: underline;
     }
 
-    /* Responsive Design */
     @media (max-width: 768px) {
       .footer_bottom {
         padding: 20px;

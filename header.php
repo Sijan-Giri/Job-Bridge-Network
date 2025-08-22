@@ -58,7 +58,7 @@
             </a>
           </li>
           <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="resume.html">Upload Resume</a></li>
+          <li class="nav-item"><a class="nav-link" href="resume.php">Upload Resume</a></li>
         </ul>
       </div>
     </div>
