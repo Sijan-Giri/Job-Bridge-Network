@@ -1,24 +1,24 @@
+
 <?php
-session_start(); // start session
+session_start(); 
 include('database/db_connect.php');
 
 if (!isset($_SESSION['userid'])) {
     die("Please login to access this page.");
 }
 
-$user_id = $_SESSION['userid']; // get logged-in user's ID
+$user_id = $_SESSION['userid'];
 ?>
+<?php include('header.php') ?>
 <?php
-// --- Create table if not exists ---
 $conn->query("CREATE TABLE IF NOT EXISTS resumes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,  -- you can replace with actual logged-in user_id
+    user_id INT NOT NULL, 
     filename VARCHAR(255) NOT NULL,
     filepath VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-// --- Handle delete ---
 if (isset($_GET['delete'])) {
     $del_id = (int)$_GET['delete'];
     $res = $conn->query("SELECT filepath FROM resumes WHERE id=$del_id AND user_id=$user_id");
@@ -33,7 +33,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// --- Handle file upload ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
     $targetDir = "uploads/";
     if (!is_dir($targetDir)) {
@@ -41,14 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
     }
 
     $fileName = basename($_FILES['resume']['name']);
-    $targetFile = $targetDir . time() . "_" . $fileName; // unique name
+    $targetFile = $targetDir . time() . "_" . $fileName;
     $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
-    // Allowed file types
     $allowedTypes = ['pdf', 'doc', 'docx'];
     if (in_array($fileType, $allowedTypes)) {
         if (move_uploaded_file($_FILES['resume']['tmp_name'], $targetFile)) {
-            // Save in DB
             $stmt = $conn->prepare("INSERT INTO resumes (user_id, filename, filepath) VALUES (?, ?, ?)");
             $stmt->bind_param("iss", $user_id, $fileName, $targetFile);
             $stmt->execute();
@@ -69,20 +66,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
     <meta charset="UTF-8" />
     <title>Upload Resume</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Premium minimal styles -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root{
             --bg: #0b1020;
-            --card: #0f172a; /* slate-900 */
-            --card-2: #111827; /* gray-900 */
-            --text: #e5e7eb;  /* gray-200 */
-            --muted: #9ca3af; /* gray-400 */
+            --card: #0f172a; 
+            --card-2: #111827; 
+            --text: #e5e7eb;  
+            --muted: #9ca3af; 
             --line: rgba(255,255,255,0.08);
-            --brand: #2563eb; /* blue-600 */
+            --brand: #2563eb; 
             --brand-500:#3b82f6;
             --brand-700:#1d4ed8;
-            --accent: #38bdf8; /* sky-400 */
+            --accent: #38bdf8; 
             --green: #22c55e;
             --red: #ef4444;
             --shadow: 0 20px 50px rgba(2, 6, 23, .65);
@@ -100,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
                 linear-gradient(180deg, #0a0f1e, #0b1020 40%, #0b1020);
         }
 
-        /* Header */
         .shell{
             max-width: 1100px;
             margin: 48px auto;
@@ -299,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
             <div class="brand">
                 <div class="brand-badge" aria-hidden="true"></div>
                 <div>
-                    <h1>WerkLinker Careers</h1>
+                    <h1>Upload Your Resume Here</h1>
                     <p class="subtitle">Upload & manage your resumes — polished for recruiters.</p>
                     <div class="quick-meta">
                         <span class="badge">PDF · DOC · DOCX</span>
@@ -403,7 +398,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
     </div>
 </div>
 
-<!-- Toast + scripts unchanged -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
