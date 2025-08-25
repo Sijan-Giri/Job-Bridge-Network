@@ -143,7 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
             font-size: 13px;
         }
 
-        /* Layout */
         .grid{
             display:grid; gap: 18px;
             grid-template-columns: 1.1fr .9fr;
@@ -152,8 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
         @media (max-width: 920px){
             .grid{ grid-template-columns: 1fr; }
         }
-
-        /* Card */
         .card{
             border:1px solid var(--line);
             background:
@@ -171,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
         .card-head h3{ margin:0; font-size: 16px; letter-spacing:.2px }
         .card-body{ padding: 18px; }
 
-        /* Upload area */
         .drop{
             position: relative;
             border:1.5px dashed rgba(148,163,184,.35);
@@ -196,7 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
 
         .hidden-input{ position:absolute; inset:0; opacity:0; cursor:pointer }
 
-        /* Buttons */
         .actions{ display:flex; gap:10px; flex-wrap: wrap; justify-content:center; }
         .btn{
             appearance:none; border:none; cursor:pointer;
@@ -215,9 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
             background: transparent; color: #c7d2fe; border:1px solid rgba(99,102,241,.35);
             box-shadow:none;
         }
-        .ghost:hover{ background: rgba(99,102,241,.08) }
 
-        /* Messages */
         .message{
             margin: 0 0 12px 0; padding: 10px 12px;
             border-radius: 12px;
@@ -227,7 +220,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
         }
         .error{ background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.25); color: #fecaca; }
 
-        /* Table */
         .table-wrap{
             overflow:auto; max-height: 520px; border-radius: calc(var(--radius) - 4px);
             border:1px solid var(--line);
@@ -252,12 +244,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
         }
         .link:hover{ color:#bfdbfe; border-bottom-color: transparent }
 
-        /* Footer note */
         .note{
             margin-top: 12px; color: var(--muted); font-size: 12px; text-align:center;
         }
 
-        /* Tiny badge row */
         .quick-meta{
             display:flex; gap:10px; flex-wrap: wrap; margin-top: 8px;
         }
@@ -266,14 +256,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
             padding: 6px 10px; border-radius: 999px; background: rgba(99,102,241,.08);
         }
 
-        /* Focus styles */
         :focus-visible{
             outline: 2px solid var(--brand-500);
             outline-offset: 2px;
             border-radius: 12px;
         }
-
-        /* Toast */
         .toast{
             position: fixed; right: 20px; bottom: 20px;
             background: linear-gradient(180deg, #0b132a, #0b142a);
@@ -313,7 +300,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
     </section>
 
     <div class="grid" role="region" aria-label="Resume uploader and history">
-        <!-- Upload Card -->
         <section class="card" aria-labelledby="uploadTitle">
             <div class="card-head">
                 <h3 id="uploadTitle">Upload Resume</h3>
@@ -351,7 +337,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
             </div>
         </section>
 
-        <!-- History Card -->
         <section class="card" aria-labelledby="historyTitle">
             <div class="card-head">
                 <h3 id="historyTitle">Your Uploaded Resumes</h3>
@@ -410,7 +395,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
     const submitBtn = document.getElementById('submitBtn');
     const toast = document.getElementById('toast');
 
-    // Helpers
     const showToast = (msg) => {
         toast.textContent = msg;
         toast.classList.add('show');
@@ -422,8 +406,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
         nameEl.textContent = 'Selected: ' + file.name;
         nameEl.style.display='block';
     };
-
-    // Drag & drop events
     const prevent = e => { e.preventDefault(); e.stopPropagation(); };
     ['dragenter','dragover','dragleave','drop'].forEach(evt => {
         drop.addEventListener(evt, prevent, false);
@@ -438,26 +420,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['resume'])) {
         }
         drop.style.borderColor='rgba(148,163,184,.35)';
     });
-
-    // Click to open
     drop.addEventListener('click', () => input.click());
     drop.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); input.click(); } });
 
-    // Input change
     input.addEventListener('change', (e) => {
         const f = e.target.files && e.target.files[0];
         setFileName(f);
         if(f) showToast('Ready to upload: ' + f.name);
     });
 
-    // Clear selection
     clearBtn.addEventListener('click', ()=>{
         input.value='';
         setFileName(null);
         showToast('Selection cleared');
     });
 
-    // Submit UX
     form.addEventListener('submit', ()=>{
         drop.classList.add('uploading');
         submitBtn.disabled = true;

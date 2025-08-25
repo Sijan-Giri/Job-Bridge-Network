@@ -1,8 +1,7 @@
 <?php 
 session_start();
-include("database/db_connect.php"); // Make sure $conn is set
+include("database/db_connect.php"); 
 
-// Get user ID from session
 $userId = $_SESSION['userid'] ?? null;
 
 if (!$userId) {
@@ -10,7 +9,6 @@ if (!$userId) {
     exit;
 }
 
-// Fetch user details from database using correct column names
 $query = "SELECT name, email, roletype FROM user WHERE userid='$userId' LIMIT 1";
 $result = mysqli_query($conn, $query);
 

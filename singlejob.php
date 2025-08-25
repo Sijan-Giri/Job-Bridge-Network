@@ -98,7 +98,7 @@ $conn->close();
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
       margin-bottom: 180px;
-      width: 70%; /* Makes the card smaller (30% smaller than previous size) */
+      width: 70%; 
     }
 
     .card:hover {
@@ -150,7 +150,6 @@ $conn->close();
       background-color: #1D4ED8;
     }
 
-    /* Fade-In Animation */
     @keyframes fadeIn {
       from {
         opacity: 0;

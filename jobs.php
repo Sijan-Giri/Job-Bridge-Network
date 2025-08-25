@@ -1,5 +1,5 @@
 <?php
-ob_start(); // Start output buffering
+ob_start(); 
 ?>
 
 <!DOCTYPE html>
@@ -182,7 +182,7 @@ if (isset($_POST['updatejob'])) {
       <select name="catid" required>
         <option value="">Select Category</option>
         <?php
-          mysqli_data_seek($categoryList, 0); // rewind if already used
+          mysqli_data_seek($categoryList, 0); 
           while ($cat = mysqli_fetch_assoc($categoryList)) {
             $selected = ($cat['catid'] == $editData['catid']) ? 'selected' : '';
             echo "<option value='{$cat['catid']}' $selected>{$cat['name']}</option>";
@@ -208,7 +208,6 @@ if (isset($_POST['updatejob'])) {
 </html>
 
 <script>
-  // Show alert if job added successfully (using PHP flag)
   window.onload = function () {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("success") === "1") {
@@ -218,5 +217,5 @@ if (isset($_POST['updatejob'])) {
 </script>
 
 <?php
-ob_end_flush(); // Flush output buffer
+ob_end_flush(); 
 ?>

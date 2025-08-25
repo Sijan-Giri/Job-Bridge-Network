@@ -1,5 +1,5 @@
 <?php 
-include("database/db_connect.php"); // Make sure this file sets $conn correctly
+include("database/db_connect.php"); 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = mysqli_real_escape_string($conn, $_POST["name"]);

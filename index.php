@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WerkLinker - Find Your Dream Job</title>
+    <title>JobSeeker - Find Your Dream Job</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -21,7 +21,6 @@
             color: inherit;
         }
 
-        /* Hero Section */
         .hero {
             display: flex;
             justify-content: space-between;
@@ -70,7 +69,6 @@
             border-radius: 8px;
         }
 
-        /* Trusted Section */
         .trusted {
             text-align: center;
             padding: 60px 20px;
@@ -85,7 +83,6 @@
             vertical-align: middle;
         }
 
-        /* Categories Section */
         .categories {
             text-align: center;
             padding: 60px 20px;
@@ -121,7 +118,6 @@
             color: white;
         }
 
-        /* Card Section */
         .card-container {
             display: flex;
             flex-wrap: wrap;
@@ -169,15 +165,10 @@
 </head>
 <?php include('header.php'); ?>
 <body>
-
     <section class="hero">
         <div class="hero-left">
-            <h1>Find Your Perfect Dream Jobs With WerkLinker</h1>
+            <h1>Find Your Perfect Dream Jobs With JobSeeker</h1>
             <p>Good life begins with a good company. Start explore thousands of jobs in one place and find your dream job.</p>
-            <div class="search-box">
-                <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Search job or skill">
-                <button class="button">Find Jobs</button>
-            </div>
         </div>
         <div class="hero-right">
             <img src="https://karunasarawak.com/wp-content/uploads/2023/10/job-vacancy-Kuching-at-Karuna-min.jpg" alt="Hero Image">

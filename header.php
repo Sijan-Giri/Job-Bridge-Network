@@ -14,42 +14,38 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job-Bridge</title>
+    <title>Job-Bridge-Network</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/header.css">
     <style>
-      /* Premium Navigation Bar */
-    /* Fix navbar height */
   .navbar-nav .nav-link:hover,
   .navbar-nav .nav-link:focus {
-    background-color: transparent !important; /* remove any blue hover */
-    color: #fff; /* keep your text color */
-    text-decoration: none; /* optional */
+    background-color: transparent !important; 
+    color: #fff; 
+    text-decoration: none; 
   }
 
   .navbar-brand {
     display: flex;
     align-items: center;
-    height: 70px; /* same as navbar height */
-    padding: 0;   /* remove default padding */
+    height: 70px; 
+    padding: 0;   
   }
 
   .brand-text {
     font-weight: 700;
     font-size: 1.5rem;
     color: #fff;
-    line-height: 70px; /* match navbar height to vertically center */
+    line-height: 70px; 
     display: inline-block;
-    transition: all 0.3s; /* smooth hover effects if needed */
+    transition: all 0.3s; 
   }
 
   .brand-text:hover {
-    color: #fff; /* optional hover effect without affecting height */
+    color: #fff; 
   }
 
-
-      /* Profile Circle */
       .profile-circle {
         width: 40px;
         height: 40px;
@@ -70,7 +66,6 @@
         background-color: #f0f0f0;
       }
 
-      /* Profile Dropdown */
       .profile-dropdown {
         position: absolute;
         top: 60px;
@@ -92,16 +87,12 @@
         font-size: 0.95rem;
         transition: all 0.2s;
       }
-
       .profile-circle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ensures image covers the circle */
-  border-radius: 50%; /* keeps image circular */
-}
-
-
-      /* Navbar container adjustment */
+      width: 100%;
+      height: 100%;
+      object-fit: cover; 
+      border-radius: 50%; 
+    }
       .navbar-nav.ml-auto {
         display: flex;
         align-items: center;
@@ -115,7 +106,6 @@
   </head>
   <body>
 
-    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <a class="navbar-brand" href="index.php">
@@ -160,7 +150,6 @@
         profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
       });
 
-      // Close dropdown when clicking outside
       document.addEventListener('click', function(event) {
         if (!profileCircle.contains(event.target) && !profileDropdown.contains(event.target)) {
           profileDropdown.style.display = 'none';
