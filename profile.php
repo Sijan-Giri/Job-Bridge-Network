@@ -1,29 +1,38 @@
-<?php 
+<?php
 session_start();
-include("database/db_connect.php"); 
+include('database/db_connect.php');
 
-$userId = $_SESSION['userid'] ?? null;
-
-if (!$userId) {
-    echo "<script>alert('Please login first'); window.location.href='login.php';</script>";
-    exit;
+// ✅ Check login
+if (!isset($_SESSION['userid'])) {
+    header("Location: login.php?redirect=profile.php");
+    exit();
 }
 
-$query = "SELECT name, email, roletype FROM user WHERE userid='$userId' LIMIT 1";
-$result = mysqli_query($conn, $query);
+// ✅ Fetch user info
+$userId = $_SESSION['userid'];
+$stmt = $conn->prepare("SELECT * FROM user WHERE userid = ?");
+if (!$stmt) die("Prepare failed: ".$conn->error);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$stmt->close();
 
-if (!$result) {
-    die("Database query failed: " . mysqli_error($conn));
+// ✅ Fetch applied jobs
+$jobs = [];
+$jobStmt = $conn->prepare("SELECT a.*, j.name AS job_name, j.location, j.timing, j.salary, c.name AS category 
+                            FROM application a 
+                            JOIN jobs j ON a.jobid = j.jobid 
+                            LEFT JOIN categories c ON j.catid = c.catid 
+                            WHERE a.userid = ? 
+                            ORDER BY a.date DESC");
+$jobStmt->bind_param("i", $userId);
+$jobStmt->execute();
+$jobResult = $jobStmt->get_result();
+while ($row = $jobResult->fetch_assoc()) {
+    $jobs[] = $row;
 }
-
-$user = mysqli_fetch_assoc($result);
-
-if (!$user) {
-    echo "<script>alert('User not found'); window.location.href='login.php';</script>";
-    exit;
-}
-
-mysqli_close($conn);
+$jobStmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -31,93 +40,240 @@ mysqli_close($conn);
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Profile</title>
+<title>Profile Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 body {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #1a1c2c, #2a3a6d);
+  font-family: 'Open Sans', sans-serif;
+  background: linear-gradient(to right, #2c74f5, #00c6ff);
+  margin: 0;
+  padding: 20px;
 }
-.profile-card {
-    background: #ffffff;
-    width: 400px;
-    border-radius: 16px;
-    padding: 40px 30px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    text-align: center;
-    position: relative;
+.profile-container {
+  max-width: 900px;
+  margin: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 30px;
+  position: relative;
 }
-.profile-card::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 500px;
-    height: 500px;
-    background: rgba(69, 243, 255, 0.15);
-    border-radius: 50%;
-    z-index: 0;
+.back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  color: #2c74f5;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
 }
-.profile-card h2 {
-    color: #0d1f4c;
-    margin-bottom: 10px;
-    font-size: 1.8em;
-    z-index: 1;
-    position: relative;
+.back-arrow:hover {
+  color: #1e40af;
+  transform: translateX(-5px);
 }
-.profile-card p {
-    color: #3a3a3a;
-    margin: 6px 0;
-    font-size: 1em;
-    z-index: 1;
-    position: relative;
+.profile-left {
+  width: 250px;
+  text-align: center;
 }
-.profile-card .info {
-    margin-top: 20px;
-    text-align: left;
+.profile-left img {
+  width: 100%;
+  border-radius: 8px;
 }
-.profile-card .info div {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #e0e0e0;
+.change-photo {
+  margin-top: -35px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
 }
-.profile-card .info div:last-child { border-bottom: none; }
-.profile-card .info div span { font-weight: 500; color: #0d1f4c; }
-.profile-card .info div strong { color: #1e3a8a; }
+.profile-links {
+  margin-top: 20px;
+  text-align: left;
+}
+.profile-links h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #777;
+  margin-bottom: 8px;
+}
+.profile-links a {
+  display: block;
+  color: #2c74f5;
+  font-size: 14px;
+  margin-bottom: 6px;
+  text-decoration: none;
+}
+.profile-right {
+  flex: 1;
+}
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.profile-header h2 {
+  margin: 0;
+  font-weight: 600;
+}
+.profile-header p {
+  margin: 4px 0 0 0;
+  color: #2c74f5;
+  font-size: 14px;
+}
 .edit-btn {
-    margin-top: 25px;
-    display: inline-block;
-    text-decoration: none;
-    background: linear-gradient(90deg, #45f3ff, #1e3a8a);
-    color: #fff;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: 0.3s;
+  padding: 6px 14px;
+  background: #f1f1f1;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #ddd;
 }
-.edit-btn:hover {
-    background: linear-gradient(90deg, #1e3a8a, #45f3ff);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+.ranking {
+  font-size: 13px;
+  color: #555;
+  margin: 8px 0;
+}
+.ranking b {
+  color: #000;
+}
+.tabs {
+  margin-top: 15px;
+  border-bottom: 1px solid #ddd;
+}
+.tabs a {
+  margin-right: 20px;
+  font-size: 14px;
+  color: #2c74f5;
+  text-decoration: none;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+.info {
+  margin-top: 15px;
+}
+.info-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.info-row div:first-child {
+  width: 120px;
+  font-weight: 600;
+  color: #555;
+}
+.info-row div:last-child {
+  color: #2c74f5;
+}
+.job-section {
+  margin-top: 30px;
+}
+.job-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.job-card h3 {
+  margin: 0 0 5px 0;
+  color: #1e3a8a;
+}
+.job-details {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 5px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  background: #10b981;
+}
+.download-btn {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  margin-top: 5px;
+}
+.download-btn:hover {
+  background: #1e40af;
 }
 </style>
 </head>
 <body>
 
-<div class="profile-card">
-    <h2>Welcome, <?php echo htmlspecialchars($user['name']); ?></h2>
-    <div class="info">
-        <div><span>Full Name:</span> <strong><?php echo htmlspecialchars($user['name']); ?></strong></div>
-        <div><span>Email:</span> <strong><?php echo htmlspecialchars($user['email']); ?></strong></div>
-        <div><span>Role:</span> <strong><?php echo htmlspecialchars($user['roletype']); ?></strong></div>
+<div class="profile-container">
+  <!-- Back Arrow -->
+  <div class="back-arrow" onclick="history.back()">&larr;</div>
+
+  <!-- Left Section -->
+  <div class="profile-left">
+    <img src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png" alt="Profile Photo">
+    <div class="change-photo">Change Photo</div>
+
+    <div class="profile-links">
+      <h4>WORK LINK</h4>
+      <a href="#">Website Link</a>
+      <a href="#">Portfolio</a>
+
+      <h4 style="margin-top: 15px;">SKILLS</h4>
+      <a href="#">Web Designer</a>
+      <a href="#">Web Developer</a>
+      <a href="#">PHP</a>
+      <a href="#">JavaScript</a>
     </div>
-    <a href="edit_profile.php" class="edit-btn">Edit Profile</a>
+  </div>
+
+  <!-- Right Section -->
+  <div class="profile-right">
+    <div class="profile-header">
+      <div>
+        <h2><?= htmlspecialchars($user['name']) ?></h2>
+        <p>Total Applied Jobs: <?= count($jobs) ?></p>
+      </div>
+      <div class="edit-btn">Edit Profile</div>
+    </div>
+
+    <div class="tabs">
+      <a href="#">About</a>
+      <a href="#">Timeline</a>
+    </div>
+
+    <div class="info">
+      <div class="info-row"><div>Name</div><div><?= htmlspecialchars($user['name']) ?></div></div>
+      <div class="info-row"><div>Email</div><div><?= htmlspecialchars($user['email']) ?></div></div>
+    </div>
+
+    <!-- Applied Jobs Section -->
+    <div class="job-section">
+      <h3>Jobs You Applied For</h3>
+      <?php if(count($jobs) > 0): ?>
+        <?php foreach($jobs as $job): ?>
+          <div class="job-card">
+            <h3><?= htmlspecialchars($job['job_name']) ?></h3>
+            <div class="job-details"><span class="badge"><?= htmlspecialchars($job['category']) ?></span></div>
+            <div class="job-details">Location: <?= htmlspecialchars($job['location']) ?> | Timing: <?= htmlspecialchars($job['timing']) ?> | Salary: Rs. <?= htmlspecialchars($job['salary']) ?></div>
+            <div class="job-details">Applied On: <?= htmlspecialchars($job['date']) ?></div>
+            <?php if($job['cv']): ?>
+              <a href="uploads/resumes/<?= htmlspecialchars($job['cv']) ?>" class="download-btn" target="_blank">Download CV</a>
+            <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p>You haven’t applied to any jobs yet.</p>
+      <?php endif; ?>
+    </div>
+
+  </div>
 </div>
 
 </body>

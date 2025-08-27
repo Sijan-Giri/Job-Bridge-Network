@@ -216,13 +216,10 @@ $conn->close();
         </div>
 
         <button class="apply-button" onclick="window.location.href='apply.php?jobid=<?= $job['jobid'] ?>'">Apply Now</button>
-
-        <a href="viewjobs.php" class="back-link">&larr; Back to Job Listings</a>
       </div>
     </div>
   <?php elseif (isset($error_message)): ?>
     <h2><?= $error_message ?></h2>
-    <a href="viewjobs.php" class="back-link">&larr; Back to Job Listings</a>
   <?php endif; ?>
 </div>
 

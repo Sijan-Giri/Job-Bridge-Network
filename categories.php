@@ -1,3 +1,4 @@
+<?php include("header.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,8 +201,6 @@
   </style>
 </head>
 <body>
-
-<?php include("header.php"); ?>
 <?php include("database/db_connect.php"); ?>
 
 <?php

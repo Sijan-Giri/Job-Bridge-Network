@@ -1,6 +1,6 @@
-
+<?php include('header.php') ?>
 <?php
-session_start(); 
+
 include('database/db_connect.php');
 
 if (!isset($_SESSION['userid'])) {
@@ -9,7 +9,7 @@ if (!isset($_SESSION['userid'])) {
 
 $user_id = $_SESSION['userid'];
 ?>
-<?php include('header.php') ?>
+
 <?php
 $conn->query("CREATE TABLE IF NOT EXISTS resumes (
     id INT AUTO_INCREMENT PRIMARY KEY,
