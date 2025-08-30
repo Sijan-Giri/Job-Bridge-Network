@@ -1,13 +1,9 @@
 <?php
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
+session_start();
 include('database/db_connect.php');
 
 if (!isset($_SESSION['userid'])) {
-    header("Location: login.php?redirect=apply.php?jobid=" . $_GET['jobid']);
+    header("Location: login.php?redirect=apply.php?jobid=" . ($_GET['jobid'] ?? 0));
     exit();
 }
 
@@ -15,56 +11,49 @@ $jobId = isset($_GET['jobid']) ? intval($_GET['jobid']) : 0;
 $userId = $_SESSION['userid'];
 $message = "";
 $success = false;
-$redirect = false; 
+$redirect = false;
+
+$cvFile = "";
+$cvStmt = $conn->prepare("SELECT filepath FROM resumes WHERE user_id=? ORDER BY uploaded_at DESC LIMIT 1");
+if (!$cvStmt) die("Prepare failed (CV fetch): " . $conn->error);
+$cvStmt->bind_param("i", $userId);
+$cvStmt->execute();
+$cvResult = $cvStmt->get_result();
+if ($cvResult->num_rows > 0) {
+    $row = $cvResult->fetch_assoc();
+    $cvFile = $row['filepath'];
+}
+$cvStmt->close();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $coverLetter = mysqli_real_escape_string($conn, $_POST['cover_letter']);
+    $coverLetter = mysqli_real_escape_string($conn, $_POST['cover_letter'] ?? '');
     $date = date('Y-m-d');
 
-    $check = $conn->prepare("SELECT * FROM application WHERE jobid = ? AND userid = ?");
-    $check->bind_param("ii", $jobId, $userId);
-    $check->execute();
-    $result = $check->get_result();
+    $checkStmt = $conn->prepare("SELECT * FROM application WHERE jobid=? AND userid=?");
+    if (!$checkStmt) die("Prepare failed (check application): " . $conn->error);
+    $checkStmt->bind_param("ii", $jobId, $userId);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
 
-    if ($result->num_rows > 0) {
+    if ($checkResult->num_rows > 0) {
         $message = "⚠️ You have already applied for this job.";
         $redirect = true;
     } else {
-        
-        $cvFile = "";
-        if (isset($_FILES['cv']) && $_FILES['cv']['error'] == 0) {
-            $targetDir = "uploads/resumes/";
-            if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+        $insertStmt = $conn->prepare("INSERT INTO application (jobid, userid, cv, cover_letter, date) VALUES (?, ?, ?, ?, ?)");
+        if (!$insertStmt) die("Prepare failed (insert application): " . $conn->error);
+        $insertStmt->bind_param("iisss", $jobId, $userId, $cvFile, $coverLetter, $date);
 
-            $cvFile = $userId . "_" . time() . "_" . basename($_FILES['cv']['name']);
-            $targetFile = $targetDir . $cvFile;
-
-            $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-            $allowed = ['pdf','doc','docx'];
-
-            if (in_array($fileType, $allowed)) {
-                move_uploaded_file($_FILES['cv']['tmp_name'], $targetFile);
-            } else {
-                $message = "Only PDF, DOC, DOCX allowed.";
-                $cvFile = "";
-            }
+        if ($insertStmt->execute()) {
+            $message = "Application submitted successfully!";
+            $success = true;
+            $redirect = true;
+        } else {
+            $message = "Error submitting application: " . $insertStmt->error;
         }
-
-        if ($cvFile != "" || $message == "") {
-            $stmt = $conn->prepare("INSERT INTO application (jobid, userid, cv, date) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("iiss", $jobId, $userId, $cvFile, $date);
-
-            if ($stmt->execute()) {
-                $message = "Application submitted successfully!";
-                $success = true; 
-                $redirect = true; 
-            } else {
-                $message = " Error submitting application: " . $stmt->error;
-            }
-            $stmt->close();
-        }
+        $insertStmt->close();
     }
-    $check->close();
+
+    $checkStmt->close();
 }
 ?>
 
@@ -112,7 +101,7 @@ label {
     font-size: 15px;
     color: #374151;
 }
-textarea, input[type="file"] {
+textarea {
     width: 100%;
     padding: 14px 16px;
     margin-bottom: 22px;
@@ -122,7 +111,7 @@ textarea, input[type="file"] {
     background: #f9fafb;
     transition: all 0.3s ease;
 }
-textarea:focus, input[type="file"]:focus {
+textarea:focus {
     outline: none;
     border-color: #2563eb;
     background: #fff;
@@ -196,19 +185,9 @@ textarea:focus, input[type="file"]:focus {
     color: #fff;
     margin-left: 8px;
 }
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
-}
-@keyframes scaleUp {
-    from {transform: scale(0.9); opacity:0;}
-    to {transform: scale(1); opacity:1;}
-}
-@media(max-width: 768px){
-    .container { margin: 60px 15px; padding: 28px; }
-    h1 { font-size: 24px; }
-    .countdown { font-size: 20px; }
-}
+@keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+@keyframes scaleUp { from {transform: scale(0.9); opacity:0;} to {transform: scale(1); opacity:1;} }
+@media(max-width:768px){ .container { margin: 60px 15px; padding: 28px; } h1 { font-size: 24px; } .countdown { font-size: 20px; } }
 </style>
 </head>
 <body>
@@ -219,14 +198,17 @@ textarea:focus, input[type="file"]:focus {
         <p class="message <?= $success ? 'success' : 'error' ?>"><?= $message ?></p>
     <?php endif; ?>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST">
         <label for="cover_letter">Cover Letter (Optional)</label>
         <textarea name="cover_letter" rows="5" placeholder="Write why you’re the right fit..."></textarea>
 
-        <label for="cv">Upload CV (PDF, DOC, DOCX)</label>
-        <input type="file" name="cv" required>
+        <?php if ($cvFile): ?>
+            <p>Your uploaded CV: <a href="<?= htmlspecialchars($cvFile) ?>" target="_blank" style="color:#2563eb; text-decoration:underline;">View CV</a></p>
+        <?php else: ?>
+            <p style="color:red;">⚠️ No CV found. Please upload one in your profile first.</p>
+        <?php endif; ?>
 
-        <button type="submit" class="btn">Submit Application</button>
+        <button type="submit" class="btn" <?= !$cvFile ? 'disabled' : '' ?>>Submit Application</button>
     </form>
 
     <?php if ($redirect): ?>

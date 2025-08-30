@@ -155,7 +155,7 @@ if (isset($_POST['updatejob'])) {
 
 <div class="container">
   <div class="form-container">
-    <h2><?php echo $editMode ? 'Edit Job' : 'Add Job'; ?></h2>
+    <h2><?php echo $editMode ? 'Edit Job' : 'Post Job'; ?></h2>
     <form method="POST" action="jobs.php<?php echo $editMode ? '?edit=' . $editJobId : ''; ?>">
       <label>Job Title</label>
       <input type="text" name="name" value="<?php echo $editData['name']; ?>" required>
@@ -191,7 +191,7 @@ if (isset($_POST['updatejob'])) {
       </select>
 
       <button type="submit" name="<?php echo $editMode ? 'updatejob' : 'addjob'; ?>">
-        <?php echo $editMode ? 'Update Job' : 'Add Job'; ?>
+        <?php echo $editMode ? 'Update Job' : 'Post Job'; ?>
       </button>
     </form>
 
@@ -211,7 +211,7 @@ if (isset($_POST['updatejob'])) {
   window.onload = function () {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("success") === "1") {
-      alert("✅ Job added successfully!");
+      alert("Job posted successfully!");
     }
   };
 </script>

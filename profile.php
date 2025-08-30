@@ -11,21 +11,36 @@ if (!isset($_SESSION['userid'])) {
 // ✅ Fetch user info
 $userId = $_SESSION['userid'];
 $stmt = $conn->prepare("SELECT * FROM user WHERE userid = ?");
-if (!$stmt) die("Prepare failed: ".$conn->error);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// ✅ Fetch applied jobs
+// ✅ Delete applied job
+if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
+    $appid = intval($_GET['delete']);
+    $delStmt = $conn->prepare("DELETE FROM application WHERE appid=? AND userid=?");
+    $delStmt->bind_param("ii", $appid, $userId);
+    if ($delStmt->execute()) {
+        echo "<script>alert('Job application deleted successfully'); window.location.href='profile.php';</script>";
+        exit();
+    } else {
+        echo "<script>alert('Failed to delete application');</script>";
+    }
+    $delStmt->close();
+}
+
+// ✅ Fetch applied jobs with status
 $jobs = [];
-$jobStmt = $conn->prepare("SELECT a.*, j.name AS job_name, j.location, j.timing, j.salary, c.name AS category 
-                            FROM application a 
-                            JOIN jobs j ON a.jobid = j.jobid 
-                            LEFT JOIN categories c ON j.catid = c.catid 
-                            WHERE a.userid = ? 
-                            ORDER BY a.date DESC");
+$jobStmt = $conn->prepare("
+    SELECT a.*, j.name AS job_name, j.location, j.timing, j.salary, c.name AS category 
+    FROM application a 
+    JOIN jobs j ON a.jobid = j.jobid 
+    LEFT JOIN categories c ON j.catid = c.catid 
+    WHERE a.userid = ? 
+    ORDER BY a.date DESC
+");
 $jobStmt->bind_param("i", $userId);
 $jobStmt->execute();
 $jobResult = $jobStmt->get_result();
@@ -130,14 +145,6 @@ body {
   cursor: pointer;
   border: 1px solid #ddd;
 }
-.ranking {
-  font-size: 13px;
-  color: #555;
-  margin: 8px 0;
-}
-.ranking b {
-  color: #000;
-}
 .tabs {
   margin-top: 15px;
   border-bottom: 1px solid #ddd;
@@ -175,6 +182,7 @@ body {
   padding: 15px;
   margin-bottom: 15px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: relative;
 }
 .job-card h3 {
   margin: 0 0 5px 0;
@@ -192,7 +200,6 @@ body {
   font-size: 12px;
   font-weight: 600;
   color: white;
-  background: #10b981;
 }
 .download-btn {
   display: inline-block;
@@ -207,15 +214,31 @@ body {
 .download-btn:hover {
   background: #1e40af;
 }
+.delete-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.delete-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
 </style>
 </head>
 <body>
 
 <div class="profile-container">
-  <!-- Back Arrow -->
+
   <div class="back-arrow" onclick="history.back()">&larr;</div>
 
-  <!-- Left Section -->
   <div class="profile-left">
     <img src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png" alt="Profile Photo">
     <div class="change-photo">Change Photo</div>
@@ -233,7 +256,6 @@ body {
     </div>
   </div>
 
-  <!-- Right Section -->
   <div class="profile-right">
     <div class="profile-header">
       <div>
@@ -244,8 +266,8 @@ body {
     </div>
 
     <div class="tabs">
-      <a href="#">About</a>
-      <a href="#">Timeline</a>
+      <a href="#">User</a>
+      <a href="#">Info</a>
     </div>
 
     <div class="info">
@@ -253,19 +275,32 @@ body {
       <div class="info-row"><div>Email</div><div><?= htmlspecialchars($user['email']) ?></div></div>
     </div>
 
-    <!-- Applied Jobs Section -->
     <div class="job-section">
       <h3>Jobs You Applied For</h3>
       <?php if(count($jobs) > 0): ?>
         <?php foreach($jobs as $job): ?>
           <div class="job-card">
             <h3><?= htmlspecialchars($job['job_name']) ?></h3>
-            <div class="job-details"><span class="badge"><?= htmlspecialchars($job['category']) ?></span></div>
-            <div class="job-details">Location: <?= htmlspecialchars($job['location']) ?> | Timing: <?= htmlspecialchars($job['timing']) ?> | Salary: Rs. <?= htmlspecialchars($job['salary']) ?></div>
+            <div class="job-details">
+              <span class="badge"><?= htmlspecialchars($job['category']) ?></span>
+              <span class="badge" style="background: <?= 
+                  $job['applicationStatus']=='selected'?'#10b981':
+                  ($job['applicationStatus']=='rejected'?'#ef4444':'#facc15'); 
+              ?>; margin-left:8px;">
+                <?= ucfirst($job['applicationStatus'] ?? 'pending') ?>
+              </span>
+            </div>
+            <div class="job-details">
+              Location: <?= htmlspecialchars($job['location']) ?> | 
+              Timing: <?= htmlspecialchars($job['timing']) ?> | 
+              Salary: Rs. <?= htmlspecialchars($job['salary']) ?>
+            </div>
             <div class="job-details">Applied On: <?= htmlspecialchars($job['date']) ?></div>
             <?php if($job['cv']): ?>
               <a href="uploads/resumes/<?= htmlspecialchars($job['cv']) ?>" class="download-btn" target="_blank">Download CV</a>
             <?php endif; ?>
+            <!-- Delete Button -->
+            <a href="profile.php?delete=<?= $job['appid'] ?>" onclick="return confirm('Are you sure you want to delete this application?');" class="delete-btn">Delete</a>
           </div>
         <?php endforeach; ?>
       <?php else: ?>

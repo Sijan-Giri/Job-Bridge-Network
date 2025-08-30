@@ -209,10 +209,15 @@ if (isset($_SESSION['userid'])) {
 
           <?php if ($roletype === 'admin'): ?>
               <li class="nav-item"><a href="viewjobs.php" class="nav-link">View Jobs</a></li>
-              <li class="nav-item"><a href="jobs.php" class="nav-link">Add Jobs</a></li>
+              <li class="nav-item"><a href="viewusers.php" class="nav-link">View Users</a></li>
               <li class="nav-item"><a href="categories.php" class="nav-link">Categories</a></li>
+
           <?php elseif ($roletype === 'user'): ?>
               <li class="nav-item"><a href="resume.php" class="nav-link">Upload Resume</a></li>
+
+          <?php elseif ($roletype === 'employee'): ?>
+              <li class="nav-item"><a href="jobs.php" class="nav-link">Post Jobs</a></li>
+              <li class="nav-item"><a href="viewapplications.php" class="nav-link">View Applications</a></li>
           <?php endif; ?>
 
           <li class="nav-item profile-container">
